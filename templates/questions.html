@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Satisfaction Survey{% endblock %}
+
+{% block content %}
+<h1>Customer Satisfaction Survey</h1>
+{% if get_flashed_messages%}
+{% for msg in get_flashed_messages() %}
+<p class="flash">{{ msg }}</p>
+{% endfor %}
+{% endif %}
+
+<form action="/answer" method="POST">
+    {{question}}
+    {% for choice in choices %}
+    <div>
+        <input type="radio" name="choice" value="{{choice}}"> {{choice}}
+    </div>
+    {% endfor %}
+    <button>next</button>
+   
+</form>
+{% endblock %}
