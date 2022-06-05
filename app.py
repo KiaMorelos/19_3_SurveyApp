@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, session 
 
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -10,7 +10,6 @@ app.config['SECRET_KEY'] = "its_a_secret_to_everybody"
 
 debug = DebugToolbarExtension(app)
 
-responses = []
 num_of_qs = len(satisfaction_survey.questions)
 
 @app.route('/')
@@ -22,10 +21,15 @@ def root():
 
     return render_template("index.html", title=title, instructions=instructions)
 
+@app.route('/start-survey', methods=['POST'])
+def start_survey():
+    session['responses'] = []
+    return redirect('/questions/0')
+
 @app.route('/questions/<int:question_num>')
 def show_questions(question_num):
     """If requested question exists and hasn't yet been answered how current question"""
-  
+    responses = session['responses']
     num_res = len(responses)
 
     if question_num > num_res:
@@ -48,7 +52,11 @@ def show_questions(question_num):
 def next_question():
     """Store answer, and redirect to next unanswerd question"""
     answer = request.form["choice"]
+   
+    responses = session['responses']
     responses.append(answer)
+    session['responses'] = responses
+
     num_res = len(responses)
     if  num_res == 0:
         return redirect("/questions/0")
